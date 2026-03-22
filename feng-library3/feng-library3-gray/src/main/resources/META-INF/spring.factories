@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  ltd.huntinginfo.feng.common.gray.GrayLoadBalancerAutoConfiguration

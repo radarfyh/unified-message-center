@@ -1,0 +1,17 @@
+/target/
+.idea/
+.iml
+.log
+.project
+.settings/
+/data/
+/.classpath
+/.factorypath
+/info.log
+.gz
+/logs
+/test
+*.iml
+*.log
+target
+*.class

@@ -1,0 +1,26 @@
+server:
+  port: 12006
+
+spring:
+  application:
+    name: @artifactId@
+  profiles:
+    active: @profiles.active@
+  cloud:
+    nacos:
+      username: @nacos.username@
+      password: @nacos.password@
+      discovery:
+        server-addr: ${NACOS_HOST:127.0.0.1}:${NACOS_PORT:8848}
+        namespace: feng_${spring.profiles.active}
+        watch:
+          enabled: true
+        watch-delay: 1000
+      config:
+        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+        namespace: ${spring.cloud.nacos.discovery.namespace}
+        file-extension: yml
+  config:
+    import:
+      - nacos:application-@profiles.active@.yml
+      - nacos:${spring.application.name}-@profiles.active@.yml

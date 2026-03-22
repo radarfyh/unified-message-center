@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>ltd.huntinginfo</groupId>
+        <artifactId>feng-cloud3</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>feng-library3</artifactId>
+    <packaging>pom</packaging>
+
+    <description>公共聚合模块</description>
+    
+    <modules>
+        <module>feng-library3-core</module>
+        <module>feng-library3-feign</module>
+        <module>feng-library3-mybatis</module>
+        <module>feng-library3-excel</module>
+        <module>feng-library3-seata</module>
+        <module>feng-library3-swagger</module>
+        <module>feng-library3-gray</module>
+        <module>feng-library3-sentinel</module>
+        <module>feng-library3-datasource</module>
+        <module>feng-library3-idempotent</module>
+        <module>feng-library3-oss</module>
+        <module>feng-library3-xss</module>
+        <module>feng-library3-websocket</module>
+        <module>feng-library3-security</module>
+        <module>feng-library3-log</module>
+        <module>feng-library3-rabbitmq</module>
+        <module>feng-library3-kafka</module>
+    </modules>
+
+</project>

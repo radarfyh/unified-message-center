@@ -1,0 +1,43 @@
+server:
+  port: 12100
+
+spring:
+  application:
+    name: @artifactId@
+  profiles:
+    active: @profiles.active@
+  cloud:
+    nacos:
+      username: @nacos.username@
+      password: @nacos.password@
+      discovery:
+        server-addr: ${NACOS_HOST:127.0.0.1}:${NACOS_PORT:8848}
+        namespace: feng_${spring.profiles.active}
+      config:
+        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+        namespace: ${spring.cloud.nacos.discovery.namespace}
+        file-extension: yml
+  config:
+    import:
+      - nacos:application-@profiles.active@.yml
+      - nacos:${spring.application.name}-@profiles.active@.yml
+
+# === 自定义 MQ 切换配置 ===
+feng:
+  mq:
+    type: rabbitmq  # 切换为 'kafka' 即可改变底层实现
+
+# === RabbitMQ 配置 (spring-boot-starter-amqp 自动读取) ===
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+
+# === Kafka 配置 (spring-kafka 自动读取) ===
+  kafka:
+    bootstrap-servers: 127.0.0.1:9092
+    producer:
+      # key/value 序列化
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer

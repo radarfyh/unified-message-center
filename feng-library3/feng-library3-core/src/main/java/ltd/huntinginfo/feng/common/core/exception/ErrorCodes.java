@@ -1,0 +1,129 @@
+/*
+ *      Copyright (c) 2018-2025, lengleng All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice,
+ *  this list of conditions and the following disclaimer.
+ *  Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the distribution.
+ *  Neither the name of the developer nor the names of its
+ *  contributors may be used to endorse or promote products derived from
+ *  this software without specific prior written permission.
+ *  Author: lengleng
+ *
+ *  Modified by radarfyh(Edison.Feng) on 2025-12-30.
+ *  Copyright (c) 2026 radarfyh(Edison.Feng). All rights reserved.
+ *
+ *  This file is part of UnifiedMessageCenter and is distributed under the
+ *  same license terms as the original work, with additional modifications
+ *  as noted above.
+ */
+package ltd.huntinginfo.feng.common.core.exception;
+
+/**
+ * 错误编码
+ *
+ * @author lengleng
+ * @date 2022/3/30
+ */
+public interface ErrorCodes {
+
+	/**
+	 * 系统编码错误
+	 */
+	String SYS_PARAM_CONFIG_ERROR = "sys.param.config.error";
+
+	/**
+	 * 系统内置参数不能删除
+	 */
+	String SYS_PARAM_DELETE_SYSTEM = "sys.param.delete.system";
+
+	/**
+	 * 用户已存在
+	 */
+	String SYS_USER_EXISTING = "sys.user.existing";
+
+	/**
+	 * 用户名已存在
+	 */
+	String SYS_USER_USERNAME_EXISTING = "sys.user.username.existing";
+
+	/**
+	 * 用户原密码错误，修改失败
+	 */
+	String SYS_USER_UPDATE_PASSWORDERROR = "sys.user.update.passwordError";
+
+	/**
+	 * 用户信息为空
+	 */
+	String SYS_USER_USERINFO_EMPTY = "sys.user.userInfo.empty";
+
+	/**
+	 * 获取当前用户信息失败
+	 */
+	String SYS_USER_QUERY_ERROR = "sys.user.query.error";
+
+	/**
+	 * 部门名称不存在
+	 */
+	String SYS_DEPT_DEPTNAME_INEXISTENCE = "sys.dept.deptName.inexistence";
+
+	/**
+	 * 岗位名称不存在
+	 */
+	String SYS_POST_POSTNAME_INEXISTENCE = "sys.post.postName.inexistence";
+
+	/**
+	 * 岗位名称或编码已经存在
+	 */
+	String SYS_POST_NAMEORCODE_EXISTING = "sys.post.nameOrCode.existing";
+
+	/**
+	 * 角色名称不存在
+	 */
+	String SYS_ROLE_ROLENAME_INEXISTENCE = "sys.role.roleName.inexistence";
+
+	/**
+	 * 角色名或角色编码已经存在
+	 */
+	String SYS_ROLE_NAMEORCODE_EXISTING = "sys.role.nameOrCode.existing";
+
+	/**
+	 * 菜单存在下级节点 删除失败
+	 */
+	String SYS_MENU_DELETE_EXISTING = "sys.menu.delete.existing";
+
+	/**
+	 * 系统内置字典不允许删除
+	 */
+	String SYS_DICT_DELETE_SYSTEM = "sys.dict.delete.system";
+
+	/**
+	 * 系统内置字典不能修改
+	 */
+	String SYS_DICT_UPDATE_SYSTEM = "sys.dict.update.system";
+
+	/**
+	 * 验证码发送频繁
+	 */
+	String SYS_APP_SMS_OFTEN = "sys.app.sms.often";
+
+	/**
+	 * 验证码错误
+	 */
+	String SYS_APP_SMS_ERROR = "sys.app.sms.error";
+
+	/**
+	 * 手机号未注册
+	 */
+	String SYS_APP_PHONE_UNREGISTERED = "sys.app.phone.unregistered";
+
+	/**
+	 * 未注册用户的短信混合系统配置键
+	 */
+	String SYS_SMS_BLEND_UNREGISTERED = "sys.app.sms.blend.unregistered";
+
+}

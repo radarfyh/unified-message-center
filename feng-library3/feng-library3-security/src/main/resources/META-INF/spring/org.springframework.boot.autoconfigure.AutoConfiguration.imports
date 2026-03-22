@@ -1,0 +1,8 @@
+ltd.huntinginfo.feng.common.security.service.FengUserDetailsServiceImpl
+ltd.huntinginfo.feng.common.security.service.FengAppUserDetailsServiceImpl
+ltd.huntinginfo.feng.common.security.service.FengRedisOAuth2AuthorizationService
+ltd.huntinginfo.feng.common.security.service.FengRedisOAuth2AuthorizationConsentService
+ltd.huntinginfo.feng.common.security.component.FengSecurityInnerAspect
+ltd.huntinginfo.feng.common.security.component.FengSecurityMessageSourceConfiguration
+ltd.huntinginfo.feng.common.security.component.FengBootCorsProperties
+ltd.huntinginfo.feng.common.security.service.FengRemoteRegisteredClientRepository

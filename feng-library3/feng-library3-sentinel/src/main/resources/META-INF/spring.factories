@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+    ltd.huntinginfo.feng.common.sentinel.SentinelAutoConfiguration,\
+    ltd.huntinginfo.feng.common.sentinel.handle.GlobalBizExceptionHandler

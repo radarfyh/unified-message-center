@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>ltd.huntinginfo</groupId>
+        <artifactId>feng-library3</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>feng-library3-kafka</artifactId>
+    <packaging>jar</packaging>
+
+    <description>feng cloud kafka处理模块</description>
+
+    <dependencies>
+        <!-- 核心依赖 -->
+        <dependency>
+            <groupId>ltd.huntinginfo</groupId>
+            <artifactId>feng-library3-core</artifactId>
+        </dependency>
+        <!-- Spring Kafka -->
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+        </dependency>
+        <!-- Jackson 2 支持 Java 8 时间类型（版本由 Spring Boot 管理） -->
+        <!--<dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>-->
+        
+        <dependency>
+            <groupId>tools.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Spring Retry（可选，Kafka 消费者重试） -->
+        <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+        </dependency>
+    </dependencies>
+</project>

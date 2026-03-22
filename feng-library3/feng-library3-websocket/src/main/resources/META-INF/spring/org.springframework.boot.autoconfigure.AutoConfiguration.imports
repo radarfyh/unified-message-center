@@ -1,0 +1,3 @@
+ltd.huntinginfo.feng.common.websocket.config.WebSocketAutoConfiguration
+ltd.huntinginfo.feng.common.websocket.config.RedisMessageDistributorConfiguration
+ltd.huntinginfo.feng.common.websocket.config.LocalMessageDistributorConfiguration

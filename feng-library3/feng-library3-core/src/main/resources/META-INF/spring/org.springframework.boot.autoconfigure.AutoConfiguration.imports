@@ -1,0 +1,4 @@
+ltd.huntinginfo.feng.common.core.config.RedisTemplateConfiguration
+ltd.huntinginfo.feng.common.core.config.RestTemplateConfiguration
+ltd.huntinginfo.feng.common.core.util.SpringContextHolder
+ltd.huntinginfo.feng.common.core.config.WebMvcConfiguration

@@ -1,0 +1,6 @@
+ltd.huntinginfo.feng.admin.api.feign.RemoteClientDetailsService
+ltd.huntinginfo.feng.admin.api.feign.RemoteDictService
+ltd.huntinginfo.feng.admin.api.feign.RemoteLogService
+ltd.huntinginfo.feng.admin.api.feign.RemoteParamService
+ltd.huntinginfo.feng.admin.api.feign.RemoteTokenService
+ltd.huntinginfo.feng.admin.api.feign.RemoteUserService

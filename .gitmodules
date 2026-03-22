@@ -1,0 +1,3 @@
+[submodule "feng-ui-web/lib/captcha"]
+	path = feng-ui-web/lib/captcha
+	url = https://github.com/anji-plus/captcha.git

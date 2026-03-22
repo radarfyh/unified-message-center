@@ -1,0 +1,106 @@
+/*
+ *      Copyright (c) 2018-2025, lengleng All rights reserved.
+ *
+ *  Redistribution and use in source and binary forms, with or without
+ *  modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice,
+ *  this list of conditions and the following disclaimer.
+ *  Redistributions in binary form must reproduce the above copyright
+ *  notice, this list of conditions and the following disclaimer in the
+ *  documentation and/or other materials provided with the distribution.
+ *  Neither the name of the developer nor the names of its
+ *  contributors may be used to endorse or promote products derived from
+ *  this software without specific prior written permission.
+ *  Author: lengleng
+ *
+ *  Modified by radarfyh(Edison.Feng) on 2025-12-30.
+ *  Copyright (c) 2026 radarfyh(Edison.Feng). All rights reserved.
+ *
+ *  This file is part of UnifiedMessageCenter and is distributed under the
+ *  same license terms as the original work, with additional modifications
+ *  as noted above.
+ */
+package ltd.huntinginfo.feng.auth.support.password;
+
+import static ltd.huntinginfo.feng.common.core.constant.SecurityConstants.PASSWORD;
+
+import java.util.Map;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2ErrorCodes;
+import org.springframework.security.oauth2.core.OAuth2Token;
+import org.springframework.security.oauth2.server.authorization.OAuth2AuthorizationService;
+import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenGenerator;
+
+import ltd.huntinginfo.feng.auth.support.base.OAuth2ResourceOwnerBaseAuthenticationProvider;
+import ltd.huntinginfo.feng.common.core.constant.CommonConstants;
+
+/**
+ * OAuth2 资源所有者密码认证提供者
+ *
+ * @author lengleng
+ * @date 2025/05/30
+ */
+public class OAuth2ResourceOwnerPasswordAuthenticationProvider
+		extends OAuth2ResourceOwnerBaseAuthenticationProvider<OAuth2ResourceOwnerPasswordAuthenticationToken> {
+
+	private static final Logger LOGGER = LogManager.getLogger(OAuth2ResourceOwnerPasswordAuthenticationProvider.class);
+
+	/**
+	 * 使用提供的参数构造一个OAuth2ResourceOwnerPasswordAuthenticationProvider
+	 * @param authenticationManager 认证管理器
+	 * @param authorizationService 授权服务
+	 * @param tokenGenerator 令牌生成器
+	 * @since 0.2.3
+	 */
+	public OAuth2ResourceOwnerPasswordAuthenticationProvider(AuthenticationManager authenticationManager,
+			OAuth2AuthorizationService authorizationService,
+			OAuth2TokenGenerator<? extends OAuth2Token> tokenGenerator) {
+		super(authenticationManager, authorizationService, tokenGenerator);
+	}
+
+	/**
+	 * 构建用户名密码认证令牌
+	 * @param reqParameters 请求参数映射，包含用户名和密码
+	 * @return 用户名密码认证令牌
+	 */
+	@Override
+	public UsernamePasswordAuthenticationToken buildToken(Map<String, Object> reqParameters) {
+		String username = (String) reqParameters.get(CommonConstants.USERNAME);
+		String password = (String) reqParameters.get(CommonConstants.PASSWORD);
+		return new UsernamePasswordAuthenticationToken(username, password);
+	}
+
+	/**
+	 * 判断是否支持指定的认证类型
+	 * @param authentication 待验证的认证类型
+	 * @return 如果支持该认证类型则返回true，否则返回false
+	 */
+	@Override
+	public boolean supports(Class<?> authentication) {
+		boolean supports = OAuth2ResourceOwnerPasswordAuthenticationToken.class.isAssignableFrom(authentication);
+		LOGGER.debug("supports authentication=" + authentication + " returning " + supports);
+		return supports;
+	}
+
+	/**
+	 * 检查客户端是否支持密码授权模式
+	 * @param registeredClient 已注册的客户端
+	 * @throws OAuth2AuthenticationException 当客户端不支持密码授权模式时抛出异常
+	 */
+	@Override
+	public void checkClient(RegisteredClient registeredClient) {
+		assert registeredClient != null;
+		if (!registeredClient.getAuthorizationGrantTypes().contains(new AuthorizationGrantType(PASSWORD))) {
+			throw new OAuth2AuthenticationException(OAuth2ErrorCodes.UNAUTHORIZED_CLIENT);
+		}
+	}
+
+}
