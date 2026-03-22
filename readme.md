@@ -575,7 +575,7 @@ mvn clean package docker:build -Pcloud
 - **Gitee 镜像**：[https://gitee.com/radarfyh/unified-message-center](https://gitee.com/radarfyh/unified-message-center)
 - **文档**：项目 `docs/` 目录下包含详细设计文档、API 手册等。
 
-欢迎 Star、Fork、提交 Issue 和 PR。如有任何问题，可在 GitHub 上提 Issue 或加入 QQ 群：xxx。
+欢迎 Star、Fork、提交 Issue 和 PR。如有任何问题，可在 GitHub 上提 Issue 或加入 QQ 群：1094082817。
 
 ## 未来规划
 
