@@ -542,3 +542,26 @@ mvn clean package docker:build -Pcloud
 - [Nacos](https://nacos.io) - 服务发现与配置管理
 - [MyBatis Plus](https://baomidou.com) - 高效的 ORM 工具
 - [Hutool](https://hutool.cn) - Java 工具库
+
+## 开源与社区
+
+- **GitHub 地址**：[https://github.com/yourusername/feng-cloud3](https://github.com/yourusername/feng-cloud3)
+- **Gitee 镜像**：[https://gitee.com/yourusername/feng-cloud3](https://gitee.com/yourusername/feng-cloud3)
+- **文档**：项目 `docs/` 目录下包含详细设计文档、API 手册等。
+
+欢迎 Star、Fork、提交 Issue 和 PR。如有任何问题，可在 GitHub 上提 Issue 或加入 QQ 群：xxx。
+
+## 未来规划
+
+- 支持更多消息渠道（短信、邮件、钉钉、企业微信等）
+- 增加消息模板管理与可视化配置
+- 完善监控告警，支持 Prometheus 指标
+- 提供 Spring Boot Starter，简化集成
+
+
+**如果觉得有用，别忘了点个 Star ⭐ 支持一下！**
+
+** QQ交流群：1094082817
+** 二维码：**
+[qq交流群](/doc/dev-manual/qrcode_1774166869361.jpg) 
+ 
