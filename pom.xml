@@ -332,13 +332,6 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
         </profile>
-        <!--mvn clean package -Pboot 该指令会在构建时构建单机版-->
-        <profile>
-            <id>boot</id>
-            <modules>
-                <module>feng-single</module>
-            </modules>
-        </profile>
         <!-- 自动激活，针对 lombok 注解增强-->
         <profile>
             <id>jdk25-annotation-processor</id>
