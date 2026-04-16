@@ -52,28 +52,4 @@ public interface RemoteUserService {
 	@NoToken
 	@GetMapping("/user/info/query")
 	R<UserInfo> info(@SpringQueryMap UserDTO user);
-	
-    @NoToken
-    @GetMapping("/user/details/{id}")
-    R<Map<String, Object>> getUserById(@PathVariable String id);
-
-    @NoToken
-    @GetMapping("/user/details")
-    R<Map<String, Object>> getUserByQuery(@RequestBody Map<String, Object> query);
-
-    @NoToken
-    @PostMapping("/user/list-by-ids")
-    R<List<Map<String, Object>>> listUsersByIds(@RequestBody List<String> userIds);
-
-    @NoToken
-    @PostMapping("/user/list-by-dept")
-    R<List<Map<String, Object>>> listUsersByDept(@RequestBody Map<String, Object> query);
-
-    @NoToken
-    @PostMapping("/user/list-by-org")
-    R<List<Map<String, Object>>> listUsersByOrg(@RequestBody Map<String, Object> query);
-
-    @NoToken
-    @PostMapping("/user/list-by-area")
-    R<List<Map<String, Object>>> listUsersByArea(@RequestBody Map<String, Object> query);
 }
