@@ -52,6 +52,11 @@ public class UnifiedMessageData<T> {
     private String ybid;
     
     /**
+     * 消息总数
+     */
+    private Integer xxzs;              
+    
+    /**
      * 统一消息记录（详情列表）
      */
     private List<T> xxjl;
