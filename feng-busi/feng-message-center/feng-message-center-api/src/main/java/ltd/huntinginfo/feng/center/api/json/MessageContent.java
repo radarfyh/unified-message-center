@@ -22,6 +22,7 @@ package ltd.huntinginfo.feng.center.api.json;
 
 import java.util.List;
 
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 /**
@@ -36,7 +37,8 @@ public class MessageContent {
 	/**
 	 * 内容的中间部分
 	 */
-	private List<String> body;
+	@Size(max = 50, message = "消息正文段落数量不能超过50段")
+	private List<@Size(max = 2000, message = "单个段落内容不能超过2000字符")String> body;
 	/**
 	 * 内容的尾部定义
 	 */

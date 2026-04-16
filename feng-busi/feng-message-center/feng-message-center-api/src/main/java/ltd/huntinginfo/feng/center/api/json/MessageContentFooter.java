@@ -22,6 +22,7 @@ package ltd.huntinginfo.feng.center.api.json;
 
 import java.util.Date;
 
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
@@ -29,6 +30,7 @@ public class MessageContentFooter {
 	/**
 	 * 单位名称
 	 */
+	@Size(max = 500, message = "单位名称不能超过500字符")
 	private String org;
 	/**
 	 * 发布日期

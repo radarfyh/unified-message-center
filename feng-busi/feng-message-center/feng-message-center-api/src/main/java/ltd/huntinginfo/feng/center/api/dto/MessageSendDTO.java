@@ -41,7 +41,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class MessageSendDTO extends UnifiedMessage {
     
 	@JsonProperty("yybs")
-    @NotBlank(message = "发送应用标识不能为空")
+    //@NotBlank(message = "发送应用标识不能为空")
     @Schema(description = "发送应用标识", example = "APP001")
     private String senderAppKey;
     
@@ -141,4 +141,6 @@ public class MessageSendDTO extends UnifiedMessage {
     @Schema(description = "过期时间", example = "2025-02-03 12:00:00.000")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS")
     private LocalDateTime expireTime;
+	
+    private String token;  // 用户登录业务系统时警综平台分配的令牌
 }

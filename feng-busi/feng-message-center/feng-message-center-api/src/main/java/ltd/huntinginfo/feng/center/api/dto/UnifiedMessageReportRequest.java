@@ -20,30 +20,23 @@
  */
 package ltd.huntinginfo.feng.center.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
-import jakarta.validation.constraints.NotBlank;
 
 @Data
 @Schema(description = "消息上报请求（用于已接收、已拉取、已阅读）")
 public class UnifiedMessageReportRequest {
 
-    @NotBlank(message = "消息ID不能为空")
-    @JsonProperty("messageId")
-    @Schema(description = "消息ID", example = "abc123")
-    private String messageId;
-
-    @JsonProperty("receiverId")
-    @Schema(description = "接收者ID（若为广播消息且需要指定接收者时使用）", example = "user001")
-    private String receiverId;
-
-    @JsonProperty("receiverType")
-    @Schema(description = "接收者类型", example = "USER")
-    private String receiverType;
-
-    @JsonProperty("broadcastId")
-    @Schema(description = "广播ID（若为广播消息时使用）", example = "broadcast001")
-    private String broadcastId;
+	@Schema(description = "处理单位名称")
+	private String cldw;
+	@Schema(description = "处理单位代码")
+	private String cldwdm;
+	@Schema(description = "处理人姓名")
+	private String clr;
+	@Schema(description = "处理人证件号码")
+	private String clrzjhm;
+	@Schema(description = "消息编码")
+	private String xxbm;   
+	@Schema(description = "用户登录业务系统时警综平台分配的令牌")
+    private String token;  
 }

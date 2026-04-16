@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ltd.huntinginfo.feng.center.api.json.MessageContent;
@@ -42,6 +43,7 @@ public class UnifiedMessage {
     /**
      * 发送单位名称
      */
+	@NotBlank(message = "发送单位名称不能为空")
     @JsonProperty("fsdw")
 	@Schema(description = "发送单位名称", example = "石家庄市消防救援支队")
     private String sendUnitName;
@@ -49,6 +51,7 @@ public class UnifiedMessage {
     /**
      * 发送单位代码
      */
+	@NotBlank(message = "发送单位代码不能为空")
     @JsonProperty("fsdwdm")
 	@Schema(description = "发送单位代码", example = "130100000000")
     private String sendUnitCode;
@@ -93,7 +96,7 @@ public class UnifiedMessage {
      * 接收单位代码
      */
     @JsonProperty("jsdwdm")
-    @Schema(description = "接收单位代码，无接收人身份证号、无接收单位代码就看接收者范围配置", example = "500241000001")
+    @Schema(description = "接收单位代码", example = "500241000001")
     private String receivingUnitCode;
     
     /**
@@ -104,10 +107,10 @@ public class UnifiedMessage {
     private String receiverName;
     
     /**
-     * 接收人身份证号（个人） 有身份证号码就不看单位代码
+     * 接收人身份证号（个人）
      */
     @JsonProperty("jsrzjhm")
-    @Schema(description = "接收人身份证号，无接收人身份证号就看接收单位代码", example = "123456789123456789")
+    @Schema(description = "接收人身份证号", example = "123456789123456789")
     private String receiverIdNumber;
     
     /**
@@ -120,6 +123,7 @@ public class UnifiedMessage {
     /**
      * 消息编码
      */
+    //@NotBlank(message = "消息编码不能为空")
     @JsonProperty("xxbm")
     @Schema(description = "消息编码", example = "XXBM-DE85WY5M2Y6")
     private String messageCode;
@@ -141,13 +145,19 @@ public class UnifiedMessage {
     private String messageTitle;
     
     /**
-     * 消息内容
+     * 消息内容对象
      */
-    @NotNull(message = "消息内容不能为空")
+    @Schema(description = "消息内容对象，支持JSON格式，若提供模板代码，则会替换消息内容")
     @JsonProperty("xxnr")
-    @Schema(description = "消息内容，支持JSON格式，若提供模板代码，则会替换消息内容")
     @TableField(typeHandler = JacksonTypeHandler.class)
     private MessageContent messageContent;
+    
+    /**
+     * 消息内容文本
+     */
+    @JsonProperty("xxnrwb")
+    @Schema(description = "消息内容文本，普通字符串")
+    private String messageContentString;
     
     /**
      * 处理地址：用户看到消息后点击跳转到这个地址，为空则不跳转

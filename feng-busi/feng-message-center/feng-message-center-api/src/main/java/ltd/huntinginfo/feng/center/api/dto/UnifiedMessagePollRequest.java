@@ -34,12 +34,12 @@ import jakarta.validation.constraints.NotBlank;
 @Schema(description = "消息拉取请求")
 public class UnifiedMessagePollRequest {
 
-    @Min(value = 1, message = "页码最小为1")
+//    @Min(value = 1, message = "页码最小为1")
     @Schema(description = "页码", example = "1")
     private Integer current = 1;
 
-    @Min(value = 1, message = "每页数量最小为1")
-    @Max(value = 100, message = "每页数量最大为100")
+//    @Min(value = 1, message = "每页数量最小为1")
+//    @Max(value = 100, message = "每页数量最大为100")
     @Schema(description = "每页数量", example = "10")
     private Integer size = 10;
     
@@ -52,7 +52,6 @@ public class UnifiedMessagePollRequest {
     /**
      * 发送对象类型 MqMessageEventConstants.ReceiverTypes
      */
-	@NotBlank(message = "发送对象类型不能为空")
     @JsonProperty("fsdx")
 	@Schema(description = "发送对象类型: USER-个人 DEPT-部门 CUSTOM-自定义 ALL-全体", example = "USER")
     private String sendTargetType;
@@ -68,7 +67,7 @@ public class UnifiedMessagePollRequest {
      * 接收单位代码
      */
     @JsonProperty("jsdwdm")
-    @Schema(description = "接收单位代码，无接收人身份证号、无接收单位代码就看接收者范围配置", example = "500241000001")
+    @Schema(description = "接收单位代码", example = "500241000001")
     private String receivingUnitCode;
     
     /**
@@ -79,10 +78,10 @@ public class UnifiedMessagePollRequest {
     private String receiverName;
     
     /**
-     * 接收人身份证号（个人） 有身份证号码就不看单位代码
+     * 接收人身份证号（个人）
      */
     @JsonProperty("jsrzjhm")
-    @Schema(description = "接收人身份证号，无接收人身份证号就看接收单位代码", example = "123456789123456789")
+    @Schema(description = "接收人身份证号", example = "123456789123456789")
     private String receiverIdNumber;
     
 	@JsonProperty("jsfwpz")
@@ -97,5 +96,7 @@ public class UnifiedMessagePollRequest {
     		+ "  }"
     		+ "}")
     private Map<String, Object> receivingScope;
+	
+    private String token;  // 用户登录业务系统时警综平台分配的令牌
 
 }

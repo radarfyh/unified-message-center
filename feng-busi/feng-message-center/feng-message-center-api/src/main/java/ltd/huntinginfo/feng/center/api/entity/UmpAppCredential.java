@@ -60,7 +60,7 @@ public class UmpAppCredential extends BaseEntity<UmpAppCredential> {
     @Schema(description = "应用名称")
     private String appName;
 
-    @Schema(description = "应用类型:DIRECT-直接接入 AGENT-代理接入")
+    @Schema(description = "应用类型:01-设备管理平台 02-执法系统 03-B5标准组件 04-同步录音录像管理子平台 05-远程讯问视音频管理子平台 06-签捺管理子平台 07-生物识别管理子平台...")
     private String appType;
     
     // ===================负责人信息===================

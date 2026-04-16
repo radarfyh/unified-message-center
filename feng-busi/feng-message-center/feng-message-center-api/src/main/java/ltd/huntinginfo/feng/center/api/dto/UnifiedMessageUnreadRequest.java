@@ -29,7 +29,8 @@ public class UnifiedMessageUnreadRequest {
     
 	private Cxdwxx cxdwxx;	
 	private Cxrxx cxrxx;
-	
+    private String token;  // 用户登录业务系统时警综平台分配的令牌
+    
 	@Data
 	@Schema(description = "查询单位信息")
 	public class Cxdwxx {

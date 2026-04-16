@@ -20,6 +20,7 @@
  */
 package ltd.huntinginfo.feng.center.api.json;
 
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
@@ -27,9 +28,11 @@ public class MessageContentHeader {
 	/**
 	 * 标题
 	 */
+	@Size(max = 500, message = "标题不能超过500字符")
 	private String title;
 	/**
 	 * 子标题
 	 */
+	@Size(max = 500, message = "子标题不能超过500字符")
 	private String subTitle;
 }
