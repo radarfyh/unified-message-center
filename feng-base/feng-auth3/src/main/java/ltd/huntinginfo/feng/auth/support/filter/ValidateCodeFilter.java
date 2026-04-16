@@ -147,14 +147,14 @@ public class ValidateCodeFilter extends OncePerRequestFilter {
 
 		String key = CacheConstants.DEFAULT_CODE_KEY + randomStr;
 		if (!RedisUtils.hasKey(key)) {
-			throw new ValidateCodeException("验证码不合法");
+			throw new ValidateCodeException("验证码过期");
 		}
 
 		String saveCode = RedisUtils.get(key);
 
 		if (StrUtil.isBlank(saveCode)) {
 			RedisUtils.delete(key);
-			throw new ValidateCodeException("验证码不合法");
+			throw new ValidateCodeException("缓存的验证码为空");
 		}
 
 		if (!StrUtil.equals(saveCode, code)) {

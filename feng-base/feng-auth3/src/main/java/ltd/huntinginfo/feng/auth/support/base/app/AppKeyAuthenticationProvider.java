@@ -59,6 +59,7 @@ import ltd.huntinginfo.feng.center.api.feign.RemoteAppCredentialService;
 import ltd.huntinginfo.feng.center.api.vo.AppDetailVO;
 import ltd.huntinginfo.feng.common.core.constant.CommonConstants;
 import ltd.huntinginfo.feng.common.core.util.SignatureUtils;
+import ltd.huntinginfo.feng.common.security.app.AppKeyAuthenticationToken;
 import ltd.huntinginfo.feng.common.security.constants.GrantTypeConstants;
 
 /**

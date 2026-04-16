@@ -23,13 +23,18 @@
  */
 package ltd.huntinginfo.feng.auth.support.core;
 
-import ltd.huntinginfo.feng.auth.support.base.app.AppKeyAuthenticationToken;
 import ltd.huntinginfo.feng.common.core.constant.SecurityConstants;
+import ltd.huntinginfo.feng.common.security.app.AppKeyAuthenticationToken;
 import ltd.huntinginfo.feng.common.security.constants.GrantTypeConstants;
 import ltd.huntinginfo.feng.common.security.service.FengUser;
+
+import org.springframework.security.oauth2.server.authorization.authentication.OAuth2ClientAuthenticationToken;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenClaimsContext;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenClaimsSet;
 import org.springframework.security.oauth2.server.authorization.token.OAuth2TokenCustomizer;
+
+import cn.hutool.json.JSONUtil;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * OAuth2 Token 自定义增强实现类
@@ -37,6 +42,7 @@ import org.springframework.security.oauth2.server.authorization.token.OAuth2Toke
  * @author lengleng
  * @date 2025/05/30
  */
+@Slf4j
 public class CustomeOAuth2TokenCustomizer implements OAuth2TokenCustomizer<OAuth2TokenClaimsContext> {
 
 	/**
@@ -48,6 +54,9 @@ public class CustomeOAuth2TokenCustomizer implements OAuth2TokenCustomizer<OAuth
 		OAuth2TokenClaimsSet.Builder claims = context.getClaims();
 		claims.claim(SecurityConstants.DETAILS_LICENSE, SecurityConstants.PROJECT_LICENSE);
 		String clientId = context.getAuthorizationGrant().getName();
+		
+		log.debug("CustomeOAuth2TokenCustomizer.customize context.getAuthorizationGrant().getName(): {}", clientId);
+		
 		claims.claim(SecurityConstants.CLIENT_ID, clientId);
 		// 客户端模式不返回具体用户信息
 		String grantType = context.getAuthorizationGrantType().getValue();
@@ -58,8 +67,15 @@ public class CustomeOAuth2TokenCustomizer implements OAuth2TokenCustomizer<OAuth
 	            // 从 principal 中获取 appKey 信息（需确认 principal 类型）
 	            Object principal = context.getPrincipal().getPrincipal();
 	            if (principal instanceof AppKeyAuthenticationToken) {
-	                String appKey = ((AppKeyAuthenticationToken) principal).getAppKey();
-	                claims.claim("app_key", appKey);
+	            	AppKeyAuthenticationToken appKeyAuthenticationToken = (AppKeyAuthenticationToken) principal;
+	                String appKey = appKeyAuthenticationToken.getAppKey();
+	                claims.claim(SecurityConstants.APP_KEY, appKey);
+	                OAuth2ClientAuthenticationToken oAuth2ClientAuthenticationToken = ((OAuth2ClientAuthenticationToken)appKeyAuthenticationToken.getPrincipal());
+	                clientId = oAuth2ClientAuthenticationToken.getRegisteredClient().getClientId();
+	                claims.claim(SecurityConstants.CLIENT_ID, clientId);
+	                
+	                log.debug("CustomeOAuth2TokenCustomizer.customize appKeyAuthenticationToken.getAppKey(): {} "
+	                		+ "oAuth2ClientAuthenticationToken.getRegisteredClient().getClientId(): {}", appKey, clientId);
 	            }
 	        }
 	        
@@ -67,6 +83,8 @@ public class CustomeOAuth2TokenCustomizer implements OAuth2TokenCustomizer<OAuth
 		}
 
 		FengUser fengUser = (FengUser) context.getPrincipal().getPrincipal();
+		log.debug("CustomeOAuth2TokenCustomizer.customize fengUser: {}", JSONUtil.toJsonStr(fengUser));
+		
 		claims.claim(SecurityConstants.DETAILS_USER, fengUser);
 		claims.claim(SecurityConstants.DETAILS_USER_ID, fengUser.getId());
 		claims.claim(SecurityConstants.USERNAME, fengUser.getUsername());

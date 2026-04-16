@@ -36,6 +36,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
+import ltd.huntinginfo.feng.common.security.app.AppKeyAuthenticationToken;
 import ltd.huntinginfo.feng.common.security.constants.GrantTypeConstants;
 import ltd.huntinginfo.feng.common.security.util.OAuth2EndpointUtils;
 
