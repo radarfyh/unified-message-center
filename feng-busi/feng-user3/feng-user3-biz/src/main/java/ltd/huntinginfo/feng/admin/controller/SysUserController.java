@@ -20,7 +20,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpHeaders;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -88,10 +87,9 @@ public class SysUserController {
 	 * @param query 用户查询条件对象
 	 * @return 包含查询结果的响应对象，用户不存在时返回null
 	 */
-	@Inner(value = false)
 	@GetMapping("/details")
 	@Operation(summary = "查询用户详细信息", description = "查询用户详细信息")
-	public R getDetails(@ParameterObject SysUser query) {
+	public R getDetails(@ModelAttribute SysUser query) {
 		SysUser sysUser = userService.getOne(Wrappers.query(query), false);
 		return R.ok(sysUser == null ? null : CommonConstants.SUCCESS);
 	}
@@ -143,7 +141,7 @@ public class SysUserController {
 	 */
 	@GetMapping("/page")
 	@Operation(summary = "分页查询用户", description = "分页查询用户")
-	public R getUserPage(@ParameterObject Page page, @ParameterObject UserDTO userDTO) {
+	public R getUserPage(@ModelAttribute Page page, @ModelAttribute UserDTO userDTO) {
 		return R.ok(userService.getUsersWithRolePage(page, userDTO));
 	}
 
