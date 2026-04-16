@@ -21,19 +21,16 @@
 
 package ltd.huntinginfo.feng.center;
 
+import ltd.huntinginfo.feng.center.config.MinistryMessageCenterProperties;
 import ltd.huntinginfo.feng.common.feign.annotation.EnableFengFeignClients;
 import ltd.huntinginfo.feng.common.security.annotation.EnableFengResourceServer;
 import ltd.huntinginfo.feng.common.swagger.annotation.EnableFengDoc;
-
-import java.util.concurrent.Executor;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
 
 /**
  * 用户统一管理系统
@@ -46,6 +43,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableFengResourceServer
 @EnableDiscoveryClient
 @SpringBootApplication
+@EnableConfigurationProperties(MinistryMessageCenterProperties.class)
 @ComponentScan(basePackages = {
 		"ltd.huntinginfo.feng.center", 
 		"ltd.huntinginfo.feng.common.rabbitmq.service", 

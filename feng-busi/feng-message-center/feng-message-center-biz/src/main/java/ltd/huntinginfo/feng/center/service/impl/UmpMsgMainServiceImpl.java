@@ -25,6 +25,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import jakarta.validation.Valid;
@@ -280,7 +281,7 @@ public class UmpMsgMainServiceImpl extends ServiceImpl<UmpMsgMainMapper, UmpMsgM
 
         // 保存到数据库
         if (save(message)) {
-            log.info("代理消息创建成功，消息ID: {}, 代理消息ID: {}", message.getId(), agentMsgId);
+            log.debug("代理消息创建成功，消息ID: {}, 代理消息ID: {}", message.getId(), agentMsgId);
             
             // 异步发布消息事件到RabbitMQ
             publishEventByStatus(recipient, unit, receiver, message, oldStatus, "");
@@ -324,6 +325,10 @@ public class UmpMsgMainServiceImpl extends ServiceImpl<UmpMsgMainMapper, UmpMsgM
 
     @Override
     public Page<MessagePageVO> queryMessagePage(MessageQueryDTO queryDTO) {
+    	if (BeanUtil.isEmpty(queryDTO)) {
+    		throw new BusinessException(BusinessEnum.UMP_PARAM_MISSING.getCode(), "queryMessagePage: queryDTO不能为空");
+    	}
+    	
         // 构建查询条件
         LambdaQueryWrapper<UmpMsgMain> queryWrapper = new LambdaQueryWrapper<>();
 
@@ -773,6 +778,10 @@ public class UmpMsgMainServiceImpl extends ServiceImpl<UmpMsgMainMapper, UmpMsgM
     }
 
     private UmpMsgMain buildMessageFromDTO(MessageSendDTO sendDTO) {
+    	if (BeanUtil.isEmpty(sendDTO)) {
+    		throw new BusinessException(BusinessEnum.UMP_PARAM_MISSING.getCode(), "buildMessageFromDTO: sendDTO不能为空");
+    	}
+    	
         UmpMsgMain message = new UmpMsgMain();
 
         message.setSenderUnitName(sendDTO.getSendUnitName());
@@ -863,7 +872,8 @@ public class UmpMsgMainServiceImpl extends ServiceImpl<UmpMsgMainMapper, UmpMsgM
         BeanUtils.copyProperties(message, detail);
         detail.setBusinessParam(message.getExtParams());
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-        detail.setDistributeTime(message.getDistributeTime().format(formatter));
+        String distributeTime = message.getDistributeTime() != null ? message.getDistributeTime().format(formatter) : null;
+        detail.setDistributeTime(distributeTime);
         detail.setIcon(null);
         detail.setMessageCode(message.getMsgCode());
         detail.setMessageContent(message.getContent());
@@ -977,12 +987,14 @@ public class UmpMsgMainServiceImpl extends ServiceImpl<UmpMsgMainMapper, UmpMsgM
      */
     private void publishEventByStatus(MessageRecipient recipient, MessageReceivingUnit unit, MessageReceiver receiver, 
     		UmpMsgMain message, String oldStatus, String taskId) {
+    	String msgId = message != null ? message.getId() : "空";
+    	
         if (BeanUtil.isEmpty(recipient) && BeanUtil.isEmpty(unit) && BeanUtil.isEmpty(receiver)) {
-            log.error("接收者为空，消息ID: {}", message.getId());
-            throw new BusinessException(BusinessEnum.UMP_PARAM_MISSING.getCode(), "接收者为空，消息ID: " + message.getId());
+            log.error("接收者为空，消息ID: {}", msgId);
+            throw new BusinessException(BusinessEnum.UMP_PARAM_MISSING.getCode(), "接收者为空，消息ID: " + msgId);
         }
 
-        log.info("发送SPRING事件 unit: {} recipient: {} receiver: {} message: {} oldStatus: {} taskId: {}", unit, recipient, receiver, message, oldStatus, taskId);
+        log.debug("发送SPRING事件 unit: {} recipient: {} receiver: {} message: {} oldStatus: {} taskId: {}", unit, recipient, receiver, message, oldStatus, taskId);
         
     	// 改为发布 Spring 事件
         applicationEventPublisher.publishEvent(new MessageStatusChangedEvent(unit, recipient, receiver, message, oldStatus, taskId));
@@ -996,7 +1008,7 @@ public class UmpMsgMainServiceImpl extends ServiceImpl<UmpMsgMainMapper, UmpMsgM
     @Async("messageTaskExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleMessageStatusChanged(MessageStatusChangedEvent event) {
-    	log.info("接收到SPRING事件 MessageStatusChangedEvent: {}", event);
+    	log.debug("接收到SPRING事件 MessageStatusChangedEvent: {}", event);
 
         // 真正发送 MQ 消息
     	publishMqEventByStatus(event);
@@ -1023,7 +1035,7 @@ public class UmpMsgMainServiceImpl extends ServiceImpl<UmpMsgMainMapper, UmpMsgM
             		umpBroadcastReceiveRecordMapper, umpTopicSubscriptionMapper, 
         			remoteUniqueUserService, remoteUniqueDeptService);
             
-            log.info("发送MQ事件 eventData: {}", eventData);
+            log.debug("发送MQ事件 eventData: {}", eventData);
             
             switch (message.getStatus()) {
 		        case MqMessageEventConstants.EventTypes.RECEIVED:
@@ -1129,7 +1141,10 @@ public class UmpMsgMainServiceImpl extends ServiceImpl<UmpMsgMainMapper, UmpMsgM
         List<UnifiedMessageDetail> allUnread = new ArrayList<>();
         allUnread.addAll(inboxUnread);
         allUnread.addAll(broadcastUnread);
-        allUnread.sort(Comparator.comparing(UnifiedMessageDetail::getDistributeTime).reversed());
+        // distributeTime 为 null 的消息会被排在列表末尾，不会抛出 NPE
+        allUnread.sort(Comparator.comparing(
+                UnifiedMessageDetail::getDistributeTime,
+                Comparator.nullsLast(Comparator.reverseOrder())));
 
         if (allUnread.size() > CommonConstants.PAGE_LIST_QUERY_LIMIT) {
             allUnread = allUnread.subList(0, CommonConstants.PAGE_LIST_QUERY_LIMIT);
@@ -1256,8 +1271,13 @@ public class UmpMsgMainServiceImpl extends ServiceImpl<UmpMsgMainMapper, UmpMsgM
         return (loginIds != null && loginIds.contains(userId)) ||
                (deptIds != null && deptIds.contains(userDeptCode));
     }
+    
     @Override
     public UnifiedMessageResponse<UnifiedMessageDetail> getUnreceivedMessagesByCursor(String appKey, UnifiedMessagePollRequest request) {
+    	if (request == null) {
+    		throw new BusinessException(BusinessEnum.UMP_PARAM_MISSING.getCode(), "getUnreceivedMessagesByCursor: request不能为空");
+    	}
+    	
         String cursorKey = appKey;
 
         // 2. 获取或创建游标记录
@@ -1272,7 +1292,7 @@ public class UmpMsgMainServiceImpl extends ServiceImpl<UmpMsgMainMapper, UmpMsgM
         // 4. 获取发送目标类型（fsdx）
         String sendTargetType = request.getSendTargetType();
         if (StrUtil.isBlank(sendTargetType)) {
-            throw new BusinessException(BusinessEnum.UMP_PARAM_MISSING.getCode(), "发送对象类型不能为空");
+            //throw new BusinessException(BusinessEnum.UMP_PARAM_MISSING.getCode(), "发送对象类型不能为空");
         }
 
         // 5. 获取用户信息（用于部门/自定义消息匹配）
@@ -1303,37 +1323,47 @@ public class UmpMsgMainServiceImpl extends ServiceImpl<UmpMsgMainMapper, UmpMsgM
             // 个人消息：查询收件箱中未读的消息（可视为未接收）
             MessageRecipient recipient = ReceiverUtil.buildRecipient(sendTargetType, receiverIdNumber,
                     remoteUniqueUserService, remoteUniqueDeptService);
-            messages = queryUnreceivedFromInbox(appKey, requestCursor, sendTargetType, recipient, limit);
+            messages = queryUnreceivedFromInbox(appKey, requestCursor, recipient, limit);
         } else if (MqMessageEventConstants.ReceiverTypes.DEPT.equals(sendTargetType)
                 || MqMessageEventConstants.ReceiverTypes.CUSTOM.equals(sendTargetType)) {
             // 部门/自定义消息：查询未被业务系统接收的广播
-            messages = queryUnreceivedFromBroadcast(appKey, requestCursor, sendTargetType, userId, userDeptCode, limit);
+            messages = queryUnreceivedFromBroadcast(appKey, requestCursor, userId, userDeptCode, limit);
         } else {
-            log.warn("不支持的接收者类型: {}", sendTargetType);
-            messages = Collections.emptyList();
+            MessageRecipient recipient = ReceiverUtil.buildRecipient(MqMessageEventConstants.ReceiverTypes.USER, receiverIdNumber,
+                    remoteUniqueUserService, remoteUniqueDeptService);
+            if (messages == null ) {
+            	messages = queryUnreceivedFromInbox(appKey, requestCursor, recipient, limit);
+            } 
+    		if (messages == null) {
+    			messages = queryUnreceivedFromBroadcast(appKey, requestCursor, userId, userDeptCode, limit);
+    		} else {
+    			messages.addAll(queryUnreceivedFromBroadcast(appKey, requestCursor, userId, userDeptCode, limit));
+    		}
         }
 
         // 生成新的游标ID
         String newCursor = "";
-        if (!messages.isEmpty()) {
+        if (CollUtil.isNotEmpty(messages)) {
             UnifiedMessageDetail last = messages.get(messages.size() - 1);
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
-            long timestamp = LocalDateTime.parse(last.getDistributeTime(), formatter)
-                    .toInstant(ZoneOffset.UTC)
-                    .toEpochMilli();
-            newCursor = timestamp + "," + last.getMessageId();
+            if (last != null && last.getDistributeTime() != null) {
+	            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+	            long timestamp = LocalDateTime.parse(last.getDistributeTime(), formatter)
+	                    .toInstant(ZoneOffset.UTC)
+	                    .toEpochMilli();
+	            newCursor = timestamp + "," + last.getMessageId();
+            }
         }
-
+        
         // 记录轮询成功
-        umpPollCursorService.recordPollSuccess(appKey, cursorKey, newCursor, messages.size());
+        umpPollCursorService.recordPollSuccess(appKey, cursorKey, newCursor, messages == null ? 0 : messages.size());
 
         return UnifiedMessageResponse.success(messages, newCursor);
     }
     
     /**
-     * 查询收件箱中未接收的个人消息（保持原逻辑）
+     * 查询收件箱中未接收的个人消息
      */
-    private List<UnifiedMessageDetail> queryUnreceivedFromInbox(String appKey, String cursor, String receiverType,
+    private List<UnifiedMessageDetail> queryUnreceivedFromInbox(String appKey, String cursor, 
                                                                 MessageRecipient recipient, Integer limit) {
         // 解析游标
         LocalDateTime cursorTime = null;
@@ -1355,10 +1385,12 @@ public class UmpMsgMainServiceImpl extends ServiceImpl<UmpMsgMainMapper, UmpMsgM
         final String finalCursorId = cursorId;
 
         // 构建查询条件（未读即未接收）
+        String receiverId = recipient != null ? recipient.getReceiverId() : "";
         LambdaQueryWrapper<UmpMsgInbox> wrapper = new LambdaQueryWrapper<UmpMsgInbox>()
-                .eq(UmpMsgInbox::getReceiverId, recipient.getReceiverId())
-                .eq(UmpMsgInbox::getReceiverType, receiverType)
-                .eq(UmpMsgInbox::getReadStatus, MessageReadStatus.UNREAD);
+                .eq(StrUtil.isNotBlank(receiverId), UmpMsgInbox::getReceiverId, receiverId)
+                .eq(UmpMsgInbox::getReceiverType, MqMessageEventConstants.ReceiverTypes.USER)
+                .eq(UmpMsgInbox::getReadStatus, MessageReadStatus.UNREAD)
+                .eq(UmpMsgInbox::getDelFlag, 0);
 
         if (finalCursorTime != null && finalCursorId != null) {
             wrapper.and(w -> w.gt(UmpMsgInbox::getDistributeTime, finalCursorTime)
@@ -1386,7 +1418,7 @@ public class UmpMsgMainServiceImpl extends ServiceImpl<UmpMsgMainMapper, UmpMsgM
     /**
      * 查询未被业务系统接收的广播消息（部门 + 自定义）
      */
-    private List<UnifiedMessageDetail> queryUnreceivedFromBroadcast(String appKey, String cursor, String receiverType,
+    private List<UnifiedMessageDetail> queryUnreceivedFromBroadcast(String appKey, String cursor, 
                                                                      String userId, String userDeptCode, Integer limit) {
         // 1. 解析游标
         LocalDateTime cursorTime = null;
@@ -1592,9 +1624,11 @@ public class UmpMsgMainServiceImpl extends ServiceImpl<UmpMsgMainMapper, UmpMsgM
         } else {
             // 收件箱消息
             InboxDetailVO inbox = umpMsgInboxService.getByMsgAndReceiver(messageId, receiverId, receiverType);
-            umpMsgInboxService.markAsRead(inbox.getId());
-            unit = ReceiverUtil.buildReceivingUnit(receiverType, inbox.getReceivingUnitCode(), remoteUniqueUserService, remoteUniqueDeptService);
-            recipient = ReceiverUtil.buildRecipient(receiverType, inbox.getReceiverIdNumber(), remoteUniqueUserService, remoteUniqueDeptService);
+            if (inbox != null && StrUtil.isNotBlank(inbox.getId())) {
+	            umpMsgInboxService.markAsRead(inbox.getId());
+	            unit = ReceiverUtil.buildReceivingUnit(receiverType, inbox.getReceivingUnitCode(), remoteUniqueUserService, remoteUniqueDeptService);
+	            recipient = ReceiverUtil.buildRecipient(receiverType, inbox.getReceiverIdNumber(), remoteUniqueUserService, remoteUniqueDeptService);
+            }
         }
         
         UmpMsgMain umpMsgMain = this.getById(messageId);
