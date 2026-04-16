@@ -129,6 +129,11 @@ public interface SecurityConstants {
 	 * 客户端ID
 	 */
 	String CLIENT_ID = "clientId";
+	
+	/**
+	 * APP KEY
+	 */
+	String APP_KEY = "app_key";
 
 	/**
 	 * 短信登录 参数名称

@@ -22,6 +22,8 @@ package ltd.huntinginfo.feng.common.security.constants;
 
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 
+import ltd.huntinginfo.feng.common.core.constant.SecurityConstants;
+
 public class GrantTypeConstants {
-    public static final AuthorizationGrantType APP_KEY = new AuthorizationGrantType("app_key");
+    public static final AuthorizationGrantType APP_KEY = new AuthorizationGrantType(SecurityConstants.APP_KEY);
 }

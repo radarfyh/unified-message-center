@@ -26,13 +26,21 @@ package ltd.huntinginfo.feng.common.security.component;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationManagerResolver;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
+import org.springframework.security.oauth2.server.resource.authentication.OpaqueTokenAuthenticationProvider;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
@@ -40,6 +48,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.core.convert.converter.Converter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -68,19 +79,19 @@ public class FengResourceServerConfiguration {
 	/**
 	 * FengBearerToken提取器
 	 */
-//	private final FengBearerTokenExtractor fengBearerTokenExtractor;
+	private final FengBearerTokenExtractor fengBearerTokenExtractor;
 
 	/**
 	 * 自定义不透明令牌解析器
 	 */
-//	private final OpaqueTokenIntrospector customOpaqueTokenIntrospector;
+	private final OpaqueTokenIntrospector customOpaqueTokenIntrospector;
 
 	/**
 	 * CORS跨域资源共享配置属性
 	 */
 	private final FengBootCorsProperties FengBootCorsProperties;
 	
-	@Value("${jwt.uri:http://feng-auth/oauth2/jwks}")
+	@Value("${jwt.uri:http://feng-gateway3/auth/oauth2/jwks}")
 	private String jwkSetUri;
 
 	/**
@@ -103,6 +114,47 @@ public class FengResourceServerConfiguration {
 				.build();
     }
     
+    /**
+     * 自定义 JWT 认证转换器，将 JWT 转换为包含 FengUser 的 Authentication
+     */
+    @Bean
+    public Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter(UserDetailsService userDetailsService) {
+        return new FengJwtAuthenticationConverter(userDetailsService);
+    }
+    
+    /**
+     * 自定义 AuthenticationManagerResolver，同时支持 JWT 和不透明令牌
+     */
+    @Bean
+    public AuthenticationManagerResolver<HttpServletRequest> tokenAuthenticationManagerResolver(
+            JwtDecoder jwtDecoder,
+            OpaqueTokenIntrospector introspector,
+            Converter<Jwt, AbstractAuthenticationToken> jwtAuthenticationConverter) {
+        // 创建 JWT 认证管理器
+        JwtAuthenticationProvider jwtProvider = new JwtAuthenticationProvider(jwtDecoder);
+        jwtProvider.setJwtAuthenticationConverter(jwtAuthenticationConverter);
+        AuthenticationManager jwtManager = new ProviderManager(jwtProvider);
+        
+        // 创建不透明令牌认证管理器
+        OpaqueTokenAuthenticationProvider opaqueProvider = new OpaqueTokenAuthenticationProvider(introspector);
+        AuthenticationManager opaqueManager = new ProviderManager(opaqueProvider);
+        
+        return request -> {
+            // 从请求中提取 token
+            String token = fengBearerTokenExtractor.resolve(request);
+            if (token == null) {
+                // 无 token 时使用默认，后续会触发认证入口点
+                return opaqueManager; // 或 throw
+            }
+            // 判断是否为 JWT：包含两个点，且每部分都是 base64url 编码
+            if (token.contains(".") && token.split("\\.").length == 3) {
+                return jwtManager;
+            } else {
+                return opaqueManager;
+            }
+        };
+    }
+    
 	/**
 	 * 资源服务器安全配置
 	 * @param http http
@@ -110,7 +162,8 @@ public class FengResourceServerConfiguration {
 	 * @throws Exception 异常
 	 */
 	@Bean
-	SecurityFilterChain resourceServer(HttpSecurity http) throws Exception {
+	SecurityFilterChain resourceServer(HttpSecurity http, 
+			AuthenticationManagerResolver<HttpServletRequest> tokenAuthenticationManagerResolver) throws Exception {
 		/**
 		 * AntPathRequestMatcher[] permitMatchers = permitAllUrl.getUrls() .stream()
 		 * .map(AntPathRequestMatcher::new) .toList() .toArray(new AntPathRequestMatcher[]
@@ -122,18 +175,16 @@ public class FengResourceServerConfiguration {
 			.toList()
 			.toArray(new PathPatternRequestMatcher[] {});
 
-		http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
-				.requestMatchers(permitMatchers).permitAll()
-				.anyRequest().authenticated())
-			.oauth2ResourceServer(
-//					oauth2 -> oauth2.opaqueToken(token -> token.introspector(customOpaqueTokenIntrospector))
-//						.authenticationEntryPoint(resourceAuthExceptionEntryPoint)
-//						.bearerTokenResolver(fengBearerTokenExtractor))
-					oauth2 -> oauth2
-						.jwt(jwt -> jwt.decoder(jwtDecoder(loadBalancedRestTemplate())))
-						.authenticationEntryPoint(resourceAuthExceptionEntryPoint))
-			.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
-			.csrf(AbstractHttpConfigurer::disable);
+	    http.authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                .requestMatchers(permitMatchers).permitAll()
+                .anyRequest().authenticated())
+        .oauth2ResourceServer(oauth2 -> oauth2
+                .authenticationManagerResolver(tokenAuthenticationManagerResolver)
+                .authenticationEntryPoint(resourceAuthExceptionEntryPoint)
+                .bearerTokenResolver(fengBearerTokenExtractor)
+        )
+        .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+        .csrf(AbstractHttpConfigurer::disable);
 
 		// 配置 CORS 跨域资源共享
 		if (Boolean.TRUE.equals(FengBootCorsProperties.getEnabled())) {

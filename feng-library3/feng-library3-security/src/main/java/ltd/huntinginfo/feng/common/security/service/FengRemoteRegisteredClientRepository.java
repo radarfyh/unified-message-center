@@ -30,6 +30,7 @@ import ltd.huntinginfo.feng.admin.api.feign.RemoteClientDetailsService;
 import ltd.huntinginfo.feng.common.core.constant.CacheConstants;
 import ltd.huntinginfo.feng.common.core.constant.SecurityConstants;
 import ltd.huntinginfo.feng.common.core.util.RetOps;
+import ltd.huntinginfo.feng.common.security.component.FengTokenTypeProperties;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.cache.annotation.Cacheable;
@@ -71,6 +72,11 @@ public class FengRemoteRegisteredClientRepository implements RegisteredClientRep
 	 */
 	private final RemoteClientDetailsService clientDetailsService;
 
+    /**
+     * 密码认证模式令牌类型配置属性
+     */
+    private final FengTokenTypeProperties fengTokenTypeProperties;
+    
 	/**
 	 * 保存注册的客户端
 	 *
@@ -129,11 +135,20 @@ public class FengRemoteRegisteredClientRepository implements RegisteredClientRep
 			.ifPresent(scope -> Arrays.stream(scope.split(StrUtil.COMMA))
 				.filter(StrUtil::isNotBlank)
 				.forEach(builder::scope));
-
+		
+	    // 根据配置动态选择令牌格式
+        OAuth2TokenFormat tokenFormat;
+        if ("SELF_CONTAINED".equalsIgnoreCase(fengTokenTypeProperties.getTokenType())) {
+            tokenFormat = OAuth2TokenFormat.SELF_CONTAINED; // JWT
+        } else {
+            tokenFormat = OAuth2TokenFormat.REFERENCE; // 不透明令牌
+        }
+        
 		return builder
 			.tokenSettings(TokenSettings.builder()
-//				.accessTokenFormat(OAuth2TokenFormat.REFERENCE)
-				.accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED) // 改为 JWT
+				//.accessTokenFormat(OAuth2TokenFormat.REFERENCE)
+				//.accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED) // 改为 JWT
+				.accessTokenFormat(tokenFormat)
 				.accessTokenTimeToLive(Duration.ofSeconds(
 						Optional.ofNullable(clientDetails.getAccessTokenValidity()).orElse(accessTokenValiditySeconds)))
 				.refreshTokenTimeToLive(Duration.ofSeconds(Optional.ofNullable(clientDetails.getRefreshTokenValidity())

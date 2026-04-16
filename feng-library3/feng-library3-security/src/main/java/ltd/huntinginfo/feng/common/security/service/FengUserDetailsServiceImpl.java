@@ -28,6 +28,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import cn.hutool.json.JSONUtil;
 import ltd.huntinginfo.feng.admin.api.dto.UserDTO;
 import ltd.huntinginfo.feng.admin.api.dto.UserInfo;
 import ltd.huntinginfo.feng.admin.api.feign.RemoteUserService;
@@ -36,6 +37,7 @@ import ltd.huntinginfo.feng.common.core.util.R;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 用户详情服务实现类，提供基于用户名加载用户详情功能
@@ -46,6 +48,7 @@ import lombok.SneakyThrows;
  */
 @Primary
 @RequiredArgsConstructor
+@Slf4j
 public class FengUserDetailsServiceImpl implements FengUserDetailsService {
 
 	private final RemoteUserService remoteUserService;
@@ -69,6 +72,8 @@ public class FengUserDetailsServiceImpl implements FengUserDetailsService {
 		UserDTO userDTO = new UserDTO();
 		userDTO.setUsername(username);
 		R<UserInfo> result = remoteUserService.info(userDTO);
+		log.debug("loadUserByUsername RemoteUserService DTO:{}, result: {}", JSONUtil.toJsonStr(userDTO), JSONUtil.toJsonStr(result));
+		
 		UserDetails userDetails = getUserDetails(result);
 		if (cache != null) {
 			cache.put(username, userDetails);

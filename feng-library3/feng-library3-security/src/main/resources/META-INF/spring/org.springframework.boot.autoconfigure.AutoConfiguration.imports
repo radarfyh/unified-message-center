@@ -5,4 +5,5 @@ ltd.huntinginfo.feng.common.security.service.FengRedisOAuth2AuthorizationConsent
 ltd.huntinginfo.feng.common.security.component.FengSecurityInnerAspect
 ltd.huntinginfo.feng.common.security.component.FengSecurityMessageSourceConfiguration
 ltd.huntinginfo.feng.common.security.component.FengBootCorsProperties
+ltd.huntinginfo.feng.common.security.component.FengTokenTypeProperties
 ltd.huntinginfo.feng.common.security.service.FengRemoteRegisteredClientRepository
