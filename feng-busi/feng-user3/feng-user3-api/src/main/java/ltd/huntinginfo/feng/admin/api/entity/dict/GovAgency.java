@@ -23,6 +23,8 @@ package ltd.huntinginfo.feng.admin.api.entity.dict;
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -31,7 +33,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 机关代码表实体类（政府单位、民间组织等）
+ * 机关代码表实体类（政府单位）
  * @author Edison.Feng
  * @date 2025/12/30
  */
@@ -57,7 +59,16 @@ public class GovAgency implements Serializable {
      * 政府机关代码
      */
     private String code;
+    
+    @Schema(description = "简称",  example = "滨海法制")
+    private String sname;
 
+    @Schema(description = "全称",  example = "天津市滨海区新区公安分局法制大队")
+    private String fname;
+    
+    @Schema(description = "行政区划代码",  example = "100000")
+    private String divisionCode;
+     
     /**
      * 上级政府机关代码
      */
@@ -68,7 +79,16 @@ public class GovAgency implements Serializable {
      */
     private Integer level;
 
-    /**
+    @Schema(description = "地址",  example = "天津市滨海区文三路359号")
+    private String address;
+
+    @Schema(description = "办公电话",  example = "022-87000000")
+    private String officeTel;
+
+    @Schema(description = "电子邮件",  example = "office@test.gov.cn")
+    private String email;
+    
+     /**
      * 备注说明
      */
     private String remark;

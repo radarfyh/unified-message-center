@@ -50,93 +50,71 @@ public class UniqueUser extends Model<UniqueUser> implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId(type = IdType.ASSIGN_UUID)
-    @Schema(description = "主键UUID", 
-           example = "1",
-           requiredMode = RequiredMode.REQUIRED)
+    @Schema(description = "主键UUID", example = "0fff17b92a4b11f1aada000c2926aaa4", requiredMode = RequiredMode.REQUIRED)
     private String id;
 
     @Schema(description = "应用代码")
     private String appKey;
     
-    @Schema(description = "用户账号，统一认证系统中的账号", 
-           example = "admin",
-           requiredMode = RequiredMode.REQUIRED)
+    @Schema(description = "用户账号，统一认证系统中的账号", example = "admin", requiredMode = RequiredMode.REQUIRED)
     private String loginId;
     
-    @Schema(description = "用户记录ID，统一消息中心账号的ID，开通后台账户时回写", 
-            example = "1")
+    @Schema(description = "用户记录ID，统一消息中心账号的ID，开通后台账户时回写", example = "1")
     private String sysUserId;
 
-    @Schema(description = "用户昵称", 
-           example = "系统管理员")
+    @Schema(description = "用户昵称", example = "系统管理员")
     private String nickname;
     
-    @Schema(description = "用户姓名", 
-            example = "系统管理员")
+    @Schema(description = "用户姓名", example = "系统管理员")
     private String name;
 
-    @Schema(description = "用户类型(0-个人用户 1-单位用户 2-其他)", 
-           example = "1",
-           requiredMode = RequiredMode.REQUIRED)
+    @Schema(description = "用户类型(0-个人用户 1-单位用户 2-其他)", example = "1", requiredMode = RequiredMode.REQUIRED)
     private String type;
     
-    @Schema(description = "统一认证系统用户拥有的公共角色以及在当前应用下拥有的角色，多个角色逗号隔开", 
-            example = "app_admin,common")
+    @Schema(description = "统一认证系统用户拥有的公共角色以及在当前应用下拥有的角色，多个角色逗号隔开", example = "app_admin,common")
     private String uniqueRoles;
     
     @Schema(description = "统一认证系统用户角色列表")
     @TableField(exist = false)
     private List<UniqueRole> uniqueRoleLists;
     
-    @Schema(description = "用户角色记录ID，统一消息中心角色的ID，开通后台账户时回写", 
-            example = "1")
+    @Schema(description = "用户角色记录ID，统一消息中心角色的ID，开通后台账户时回写", example = "1")
     private String sysRoleId;
 
-    @Schema(description = "身份证号", 
-           example = "330102199001011234")
+    @Schema(description = "身份证号", example = "330102199001011234")
     private String idCard;
 
-    @Schema(description = "所属区域代码", 
-            example = "100000")
+    @Schema(description = "所属行政区划代码", example = "100000")
     private String divisionCode;
 
-    @Schema(description = "所属区域信息", 
-           example = "西湖区")
+    @Schema(description = "所属区域信息", example = "西湖区")
     @TableField(exist = false)
     private DictAdministrativeDivision uniqueDivision;
     
-    @Schema(description = "所属单位代码", 
-            example = "100000")
+    @Schema(description = "所属单位代码", example = "100000")
     private String agencyCode;
 
-    @Schema(description = "所属单位单位信息", 
-           example = "西湖区机关")
+    @Schema(description = "所属单位单位信息",  example = "西湖区机关")
     @TableField(exist = false)
     private GovAgency govAgency;
 
-    @Schema(description = "所属机构代码", 
-            example = "100000")
+    @Schema(description = "所属机构代码", example = "100000")
     private String uniqueOrgCode;
     
-    @Schema(description = "所属机构信息", 
-           example = "XX消防大队")
+    @Schema(description = "所属机构信息", example = "XX消防大队")
     @TableField(exist = false)
     private UniqueOrg uniqueOrg;
 
-    @Schema(description = "用户邮箱", 
-           example = "user@test.com")
+    @Schema(description = "用户邮箱", example = "user@test.com")
     private String email;
 
-    @Schema(description = "手机号码", 
-           example = "13800138000")
+    @Schema(description = "手机号码", example = "13800138000")
     private String mobile;
 
-    @Schema(description = "用户性别(0-未知 1-男 2-女)", 
-           example = "1")
+    @Schema(description = "用户性别(0-未知 1-男 2-女)", example = "1")
     private Integer sex;
 
-    @Schema(description = "用户头像", 
-           example = "/avatar/default.jpg")
+    @Schema(description = "用户头像", example = "/avatar/default.jpg")
     private String avatar;
 
     @Schema(description = "最后登录IP",  example = "192.168.1.1")
@@ -148,37 +126,29 @@ public class UniqueUser extends Model<UniqueUser> implements Serializable {
     @Schema(description = "刷新令牌")
     private String refreshToken;
     
-    @Schema(description = "过期时间", 
-            example = "2023-08-15T10:00:00")
+    @Schema(description = "过期时间", example = "2023-08-15T10:00:00")
     private Date expiresTime;
 
-    @Schema(description = "最后登录时间", 
-           example = "2023-08-15T10:00:00")
+    @Schema(description = "最后登录时间", example = "2023-08-15T10:00:00")
     private Date loginDate;
 
     @TableField(fill = FieldFill.INSERT)
-    @Schema(description = "创建者", 
-           example = "admin")
+    @Schema(description = "创建者", example = "admin")
     private String createBy;
 
     @TableField(fill = FieldFill.INSERT)
-    @Schema(description = "创建时间", 
-           example = "2023-08-15T10:00:00")
+    @Schema(description = "创建时间", example = "2023-08-15T10:00:00")
     private Date createTime;
 
     @TableField(fill = FieldFill.UPDATE)
-    @Schema(description = "更新者", 
-           example = "admin")
+    @Schema(description = "更新者", example = "admin")
     private String updateBy;
 
     @TableField(fill = FieldFill.UPDATE)
-    @Schema(description = "更新时间", 
-           example = "2023-08-15T10:00:00")
+    @Schema(description = "更新时间", example = "2023-08-15T10:00:00")
     private Date updateTime;
 
     @TableLogic
-    @Schema(description = "逻辑删除标记（0-正常 1-删除）", 
-           example = "0",
-           allowableValues = {"0", "1"})
+    @Schema(description = "逻辑删除标记（0-正常 1-删除）", example = "0", allowableValues = {"0", "1"})
     private String delFlag;
 }
