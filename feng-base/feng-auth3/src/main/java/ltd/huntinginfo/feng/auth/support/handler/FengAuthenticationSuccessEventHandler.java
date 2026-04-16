@@ -25,6 +25,7 @@ package ltd.huntinginfo.feng.auth.support.handler;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import ltd.huntinginfo.feng.admin.api.entity.SysLog;
 import ltd.huntinginfo.feng.common.core.constant.CommonConstants;
 import ltd.huntinginfo.feng.common.core.constant.SecurityConstants;
@@ -78,7 +79,7 @@ public class FengAuthenticationSuccessEventHandler implements AuthenticationSucc
 		if (MapUtil.isNotEmpty(map)) {
 			// 发送异步日志事件
 			FengUser userInfo = (FengUser) map.get(SecurityConstants.DETAILS_USER);
-			log.info("用户：{} 登录成功", userInfo.getName());
+
 			SecurityContextHolder.getContext().setAuthentication(accessTokenAuthentication);
 			SysLog logVo = SysLogUtils.getSysLog();
 			logVo.setTitle("登录成功");
@@ -88,7 +89,10 @@ public class FengAuthenticationSuccessEventHandler implements AuthenticationSucc
 				Long endTime = System.currentTimeMillis();
 				logVo.setTime(endTime - startTime);
 			}
-			logVo.setCreateBy(userInfo.getName());
+			if (userInfo != null) {
+				logVo.setCreateBy(userInfo.getName());
+				log.debug("用户：{} 登录成功 用户信息：{}，日志信息：{}", userInfo.getName(), JSONUtil.toJsonPrettyStr(userInfo), JSONUtil.toJsonPrettyStr(logVo));
+			}
 			SpringContextHolder.publishEvent(new SysLogEvent(logVo));
 		}
 
